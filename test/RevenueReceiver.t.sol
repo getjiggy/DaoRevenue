@@ -19,7 +19,6 @@ contract RevenueReceiverTest is Test {
 
     address private treasury = address(0xDEAD);
 
-
     function setUp() public {
         shareToken = new MockErc20("Share Token", "SHR");
         token1 = new MockErc20("Token 1", "TK1");
@@ -27,7 +26,7 @@ contract RevenueReceiverTest is Test {
 
         distributor = new DividendDistributor(address(shareToken));
         receiver = new RevenueReceiver(0.5 ether, address(distributor), treasury);
-    
+
         // Mint share tokens to shareholders
         shareToken.mint(SHAREHOLDER_1, 1000 ether);
         shareToken.mint(SHAREHOLDER_2, 1000 ether);

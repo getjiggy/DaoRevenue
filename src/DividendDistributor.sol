@@ -9,32 +9,32 @@ contract DividendDistributor is ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     IERC20 private _shareToken;
-    uint private constant WAD = 1 ether;
+    uint256 private constant WAD = 1 ether;
 
-    mapping (address => uint256) private _perShareDividend;
-    mapping (address => mapping(address => uint256)) private _claimedDividends;
+    mapping(address => uint256) private _perShareDividend;
+    mapping(address => mapping(address => uint256)) private _claimedDividends;
 
     error NoSharesExist();
     error NoTokensTransferred();
     error InvalidDividendAmount();
     error EthClaimFailed();
-    
+
     constructor(address shareToken_) {
         _shareToken = IERC20(shareToken_);
     }
 
-    function distribute(address token, uint amount) nonReentrant() external payable {
+    function distribute(address token, uint256 amount) external payable nonReentrant {
         if (amount == 0) {
             revert InvalidDividendAmount();
         } else if (token == address(0) && msg.value != amount) {
             revert InvalidDividendAmount();
         }
 
-        uint balanceToDistribute = amount;
-        
+        uint256 balanceToDistribute = amount;
+
         if (token != address(0)) {
             IERC20(token).safeTransferFrom(msg.sender, address(this), balanceToDistribute);
-        } 
+        }
 
         uint256 totalShares = _shareToken.totalSupply();
 
@@ -45,7 +45,7 @@ contract DividendDistributor is ReentrancyGuard {
         _perShareDividend[token] += (balanceToDistribute * WAD) / totalShares;
     }
 
-    function claimDividend(address token) external nonReentrant() {
+    function claimDividend(address token) external nonReentrant {
         address shareholder = msg.sender;
         uint256 shareholderShares = _shareToken.balanceOf(shareholder);
         uint256 totalDividend = (_perShareDividend[token] * shareholderShares) / WAD;
@@ -60,7 +60,6 @@ contract DividendDistributor is ReentrancyGuard {
                 if (!success) {
                     revert EthClaimFailed();
                 }
-
             } else {
                 IERC20(token).safeTransfer(shareholder, payableDividend);
             }

@@ -13,18 +13,15 @@ contract RevenueReceiver is IRevenueReceiver, RevenueSplitter, ReentrancyGuard {
     event RevenueWithdrawn(address indexed receiver, uint256 amount);
     // modules that determine how to distribute revenue
 
-    constructor(
-        uint splitPercentage_,
-        address dividendDistributor_, 
-        address treasury_)
-        RevenueSplitter(splitPercentage_, dividendDistributor_, treasury_) {
-    }
+    constructor(uint256 splitPercentage_, address dividendDistributor_, address treasury_)
+        RevenueSplitter(splitPercentage_, dividendDistributor_, treasury_)
+    {}
 
     receive() external payable {
         emit RevenueReceived(msg.sender, msg.value);
     }
 
-    function sweep(address _token) nonReentrant() public {
+    function sweep(address _token) public nonReentrant {
         if (_token == address(0)) {
             _sweepEth();
         } else {
@@ -52,7 +49,7 @@ contract RevenueReceiver is IRevenueReceiver, RevenueSplitter, ReentrancyGuard {
         if (balance == 0) {
             revert NoRevenueToSweep();
         }
-        
+
         _splitTokenRevenue(token);
     }
 }
