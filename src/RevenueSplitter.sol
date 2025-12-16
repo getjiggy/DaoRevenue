@@ -40,7 +40,7 @@ contract RevenueSplitter {
     }
 
     function _splitEthRevenue() internal {
-        uint256 value = msg.value;
+        uint256 value = address(this).balance;
         uint256 dividendAmount = (value * _dividendSplitPercentage) / DIVISOR;
         uint256 treasuryAmount = value - dividendAmount;
 
