@@ -10,7 +10,7 @@ contract RevenueReceiver is IRevenueReceiver, RevenueSplitter, ReentrancyGuard {
     error NoRevenueToSweep();
 
     event RevenueReceived(address indexed sender, uint256 amount);
-    event RevenueWithdrawn(address indexed receiver, uint256 amount);
+    event RevenueWithdrawn(address indexed receiver, address indexed token, uint256 amount);
     // modules that determine how to distribute revenue
 
     constructor(uint16 splitPercentage_, address dividendDistributor_, address treasury_)
@@ -21,14 +21,18 @@ contract RevenueReceiver is IRevenueReceiver, RevenueSplitter, ReentrancyGuard {
         emit RevenueReceived(msg.sender, msg.value);
     }
 
-    function sweep(address _token) public nonReentrant {
-        if (_token == address(0)) {
+    function sweep(address token) public nonReentrant {
+        uint balance;
+        if (token == address(0)) {
+            balance = address(this).balance;
             _sweepEth();
         } else {
-            _sweepErc20(_token);
+            balance = IERC20(token).balanceOf(address(this));
+            _sweepErc20(token);
         }
+
         emit RevenueWithdrawn(
-            msg.sender, _token == address(0) ? address(this).balance : IERC20(_token).balanceOf(address(this))
+            msg.sender, token, balance
         );
     }
 
