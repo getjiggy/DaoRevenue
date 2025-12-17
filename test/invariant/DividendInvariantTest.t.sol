@@ -42,7 +42,7 @@ contract DividendInvariantTest is StdInvariant, Test {
         assertEq(balance, handler.totalDistributed() - claimed);
     }
 
-    function invariant_ClaimsNeverExceedLifetimeDistributed() public view{
+    function invariant_ClaimsNeverExceedLifetimeDistributed() public view {
         uint256 claimed = handler.totalClaimed();
         assertLe(claimed, handler.totalDistributed());
     }
