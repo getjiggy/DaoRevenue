@@ -19,6 +19,7 @@ contract DividendDistributor is ReentrancyGuard {
     error NoEthTransferred();
     error InvalidDividendAmount();
     error EthClaimFailed();
+    error DirectEthTransferNotAllowed();
 
     constructor(address shareToken_) {
         _shareToken = IERC20(shareToken_);
@@ -86,5 +87,17 @@ contract DividendDistributor is ReentrancyGuard {
 
     function shares(address shareholder) external view returns (uint256) {
         return _shareToken.balanceOf(shareholder);
+    }
+
+
+    // Prevent direct ETH transfers
+    // can still receive ETH via distribute function (which is intended). 
+    // selfdestruct will pass, but that's acceptable.
+    receive() external payable {
+        revert DirectEthTransferNotAllowed();
+    }
+
+    fallback() external payable {
+        revert DirectEthTransferNotAllowed();
     }
 }
