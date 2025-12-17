@@ -7,7 +7,7 @@ import {Test} from "forge-std/Test.sol";
 
 contract DividendHandler is Test {
     DividendDistributor public distributor;
-    MockErc20 public payoutToken;
+    address public payoutToken;
     MockErc20 public shareToken;
 
     address[] private users;
@@ -15,7 +15,7 @@ contract DividendHandler is Test {
     uint256 public totalDistributed;
     bool public hasDistributed;
 
-    constructor(DividendDistributor _distributor, MockErc20 _payoutToken, MockErc20 _shareToken) {
+    constructor(DividendDistributor _distributor, address _payoutToken, MockErc20 _shareToken) {
         distributor = _distributor;
         payoutToken = _payoutToken;
         shareToken = _shareToken;
@@ -31,10 +31,15 @@ contract DividendHandler is Test {
     function distribute(uint256 amount) external {
         vm.assume(amount > 0);
         vm.assume(amount < type(uint256).max / 1e18);
-
-        payoutToken.mint(address(this), amount);
-        payoutToken.approve(address(distributor), amount);
-        distributor.distribute(address(payoutToken), amount);
+        if (payoutToken == address(0)) {
+            // Distribute ETH
+            vm.deal(address(this), amount);
+            distributor.distribute{value: amount}(address(0), amount);
+        } else {
+            MockErc20(payoutToken).mint(address(this), amount);
+            MockErc20(payoutToken).approve(address(distributor), amount);
+            distributor.distribute(address(payoutToken), amount);
+        }
         totalDistributed += amount;
         hasDistributed = true;
     }

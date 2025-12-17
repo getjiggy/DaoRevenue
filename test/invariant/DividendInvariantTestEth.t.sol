@@ -6,19 +6,19 @@ import {DividendDistributor} from "../../src/DividendDistributor.sol";
 import {DividendHandler} from "../utils/DividendHandler.sol";
 import {MockErc20} from "../utils/MockErc20.sol";
 
-contract DividendInvariantTest is StdInvariant, Test {
+contract DividendInvariantTestEth is StdInvariant, Test {
     DividendDistributor distributor;
     DividendHandler handler;
-    MockErc20 payoutToken;
+    address payoutToken;
     MockErc20 shareToken;
 
     function setUp() public {
         shareToken = new MockErc20("Share", "SHARE");
-        payoutToken = new MockErc20("Payout", "PAY");
+        payoutToken = address(0x0);
 
         distributor = new DividendDistributor(address(shareToken));
 
-        handler = new DividendHandler(distributor, address(payoutToken), shareToken);
+        handler = new DividendHandler(distributor, payoutToken, shareToken);
 
         targetContract(address(handler));
     }
@@ -29,7 +29,7 @@ contract DividendInvariantTest is StdInvariant, Test {
         address[] memory users = handler.getUsers();
         for (uint256 i = 0; i < users.length; i++) {
             address user = users[i];
-            uint256 userBalance = payoutToken.balanceOf(users[i]);
+            uint256 userBalance = user.balance;
             totalBalance += userBalance;
             assertEq(distributor.claimedDividends(address(payoutToken), user), userBalance);
         }
@@ -38,7 +38,7 @@ contract DividendInvariantTest is StdInvariant, Test {
 
     function invariant_BalanceMatchesDistributedMinusClaimed() public view {
         uint256 claimed = handler.totalClaimed();
-        uint256 balance = payoutToken.balanceOf(address(distributor));
+        uint256 balance = address(distributor).balance;
         assertEq(balance, handler.totalDistributed() - claimed);
     }
 
