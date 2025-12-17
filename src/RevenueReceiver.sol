@@ -22,7 +22,7 @@ contract RevenueReceiver is IRevenueReceiver, RevenueSplitter, ReentrancyGuard {
     }
 
     function sweep(address token) public nonReentrant {
-        uint balance;
+        uint256 balance;
         if (token == address(0)) {
             balance = address(this).balance;
             _sweepEth();
@@ -31,9 +31,7 @@ contract RevenueReceiver is IRevenueReceiver, RevenueSplitter, ReentrancyGuard {
             _sweepErc20(token);
         }
 
-        emit RevenueWithdrawn(
-            msg.sender, token, balance
-        );
+        emit RevenueWithdrawn(msg.sender, token, balance);
     }
 
     function _sweepEth() internal {
