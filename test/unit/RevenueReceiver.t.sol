@@ -2,6 +2,7 @@ pragma solidity ^0.8.24;
 // SPDX-License-Identifier: MIT
 
 import {BaseTest} from "../TestBase.sol";
+import {RevenueReceiver} from "../../src/RevenueReceiver.sol";
 
 contract RevenueReceiverTest is BaseTest {
     function testSweepTokenRevenue() public {
@@ -36,5 +37,17 @@ contract RevenueReceiverTest is BaseTest {
         // check that the treasury received its share
         uint256 treasuryBalance = treasury.balance;
         assertEq(treasuryBalance, 50 ether);
+    }
+
+    function testZeroEthSweepReverts() public {
+        vm.prank(address(this));
+        vm.expectRevert(RevenueReceiver.NoRevenueToSweep.selector);
+        receiver.sweep(address(0));
+    }
+
+    function testZeroTokenSweepReverts() public {
+        vm.prank(address(this));
+        vm.expectRevert(RevenueReceiver.NoRevenueToSweep.selector);
+        receiver.sweep(address(token1));
     }
 }
