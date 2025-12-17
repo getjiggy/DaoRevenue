@@ -10,13 +10,14 @@ contract RevenueSplitter {
     IDividendDistributor private _dividendDistributor;
 
     address private _treasury;
-    uint256 private _dividendSplitPercentage;
+    uint16 private _dividendSplitPercentage;
 
-    uint256 private constant DIVISOR = 1 ether;
+    uint16 private constant DIVISOR = 10000;
 
     error EthTransferFailed();
 
-    constructor(uint256 dividendSplitPercentage_, address dividendDistributor_, address treasury_) {
+    constructor(uint16 dividendSplitPercentage_, address dividendDistributor_, address treasury_) {
+        require(dividendSplitPercentage_ <= DIVISOR, "RevenueSplitter: Dividend split percentage must be <= 100%");
         _dividendSplitPercentage = dividendSplitPercentage_;
         _dividendDistributor = IDividendDistributor(dividendDistributor_);
         _treasury = treasury_;

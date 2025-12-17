@@ -13,7 +13,7 @@ contract RevenueReceiver is IRevenueReceiver, RevenueSplitter, ReentrancyGuard {
     event RevenueWithdrawn(address indexed receiver, uint256 amount);
     // modules that determine how to distribute revenue
 
-    constructor(uint256 splitPercentage_, address dividendDistributor_, address treasury_)
+    constructor(uint16 splitPercentage_, address dividendDistributor_, address treasury_)
         RevenueSplitter(splitPercentage_, dividendDistributor_, treasury_)
     {}
 

@@ -16,6 +16,7 @@ contract DividendDistributor is ReentrancyGuard {
 
     error NoSharesExist();
     error NoTokensTransferred();
+    error NoEthTransferred();
     error InvalidDividendAmount();
     error EthClaimFailed();
 
@@ -33,7 +34,16 @@ contract DividendDistributor is ReentrancyGuard {
         uint256 balanceToDistribute = amount;
 
         if (token != address(0)) {
+            uint256 balanceBefore = IERC20(token).balanceOf(address(this));
             IERC20(token).safeTransferFrom(msg.sender, address(this), balanceToDistribute);
+            uint256 balanceAfter = IERC20(token).balanceOf(address(this));
+            if (balanceAfter - balanceBefore != amount) {
+                revert NoTokensTransferred();
+            }
+        } else {
+            if (msg.value != amount) {
+                revert NoEthTransferred();
+            }
         }
 
         uint256 totalShares = _shareToken.totalSupply();
@@ -64,5 +74,17 @@ contract DividendDistributor is ReentrancyGuard {
                 IERC20(token).safeTransfer(shareholder, payableDividend);
             }
         }
+    }
+
+    function dividendPerShare(address token) external view returns (uint256) {
+        return _perShareDividend[token];
+    }
+
+    function claimedDividends(address token, address shareholder) external view returns (uint256) {
+        return _claimedDividends[token][shareholder];
+    }
+
+    function shares(address shareholder) external view returns (uint256) {
+        return _shareToken.balanceOf(shareholder);
     }
 }
