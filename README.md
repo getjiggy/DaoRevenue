@@ -9,7 +9,7 @@ As I continue to have free time to work on this, i plan to evolve the architectu
 This is repo is purely for fun/learning, as I plan to write both traditional unit tests/fuzz tests but to also learn the ins and out of symbolic testing with halmos etc. 
 
 Should go without saying DO NOT USE THESE IN PRODUCTION. 
-
+```
 ╭--------------------------------+------------------+------------------+----------------+----------------╮
 | File                           | % Lines          | % Statements     | % Branches     | % Funcs        |
 +========================================================================================================+
@@ -29,3 +29,4 @@ Should go without saying DO NOT USE THESE IN PRODUCTION.
 |--------------------------------+------------------+------------------+----------------+----------------|
 | Total                          | 86.58% (129/149) | 87.58% (134/153) | 71.43% (20/28) | 80.00% (20/25) |
 ╰--------------------------------+------------------+------------------+----------------+----------------╯
+```
