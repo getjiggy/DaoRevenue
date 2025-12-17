@@ -23,7 +23,7 @@ contract DividendInvariantTest is StdInvariant, Test {
         targetContract(address(handler));
     }
 
-    function invariant_TotalClaimsNeverExceedBalance() public {
+    function invariant_TotalClaimsNeverExceedBalance() public view {
         uint256 claimed = handler.totalClaimed();
         uint256 totalBalance;
         address[] memory users = handler.getUsers();
@@ -36,13 +36,13 @@ contract DividendInvariantTest is StdInvariant, Test {
         assertEq(claimed, totalBalance);
     }
 
-    function invariant_BalanceMatchesDistributedMinusClaimed() public {
+    function invariant_BalanceMatchesDistributedMinusClaimed() public view {
         uint256 claimed = handler.totalClaimed();
         uint256 balance = payoutToken.balanceOf(address(distributor));
         assertEq(balance, handler.totalDistributed() - claimed);
     }
 
-    function invariant_ClaimsNeverExceedLifetimeDistributed() public {
+    function invariant_ClaimsNeverExceedLifetimeDistributed() public view{
         uint256 claimed = handler.totalClaimed();
         assertLe(claimed, handler.totalDistributed());
     }
